@@ -28,22 +28,36 @@ function parseNumber(raw: string): number {
 }
 
 function deriveSide(dir: string): TradeSide {
-  if (dir.toLowerCase().includes("long")) {
+  const normalized = dir.trim().toLowerCase();
+
+  if (normalized.includes("long")) {
     return "long";
   }
-  if (dir.toLowerCase().includes("short")) {
+  if (normalized.includes("short")) {
     return "short";
+  }
+  if (normalized.includes("buy") || normalized.includes("sell")) {
+    return "long";
   }
   throw new Error(`Unknown side: ${dir}`);
 }
 
 function deriveAction(dir: string): "open" | "close" {
-  if (dir.toLowerCase().startsWith("open")) {
-    return "open";
-  }
-  if (dir.toLowerCase().startsWith("close")) {
+  const normalized = dir.trim().toLowerCase();
+
+  if (
+    normalized.includes("close") ||
+    normalized.includes("sell") ||
+    normalized.includes("liquidation") ||
+    normalized.includes(" > ")
+  ) {
     return "close";
   }
+
+  if (normalized.includes("open") || normalized.includes("buy")) {
+    return "open";
+  }
+
   throw new Error(`Unknown trade action: ${dir}`);
 }
 
